@@ -14,7 +14,7 @@ RUN apk update &&\
 ENV TERM dumb
 
 # install tomcat
-RUN wget -O tomcat.tar.gz http://www.apache.org/dist/tomcat/tomcat-7/v7.0.68/bin/apache-tomcat-7.0.68.tar.gz &&\
+RUN wget -O tomcat.tar.gz http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.68/bin/apache-tomcat-7.0.68.tar.gz &&\
     gunzip tomcat.tar.gz &&\
     tar -xvf tomcat.tar && \
     mv apache-tomcat-7.0.68 /usr/local/tomcat && \
