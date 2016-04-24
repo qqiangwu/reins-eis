@@ -13,17 +13,16 @@ RUN apk update &&\
 
 ENV TERM dumb
 
-# install tomcat
-RUN wget -O tomcat.tar.gz http://www.apache.org/dist/tomcat/tomcat-7/v7.0.68/bin/apache-tomcat-7.0.68.tar.gz &&\
-    gunzip tomcat.tar.gz &&\
-    tar -xvf tomcat.tar && \
-    mv apache-tomcat-7.0.68 /usr/local/tomcat && \
-    rm -rf tomcat.tar.gz tomcat.tar
+# install jboss
+COPY jboss-eap-6.4.0.zip .
+RUN  unzip jboss-eap-6.4.0 &&\
+     rm -rf jboss-eap-6.4.0.zip
+COPY standalone.xml jboss-eap-6.4/standalone/configuration/
 
 # config mysql
 COPY my.cnf /etc/mysql/my.cnf
 
-ADD start.sh . 
+ADD start.sh .
 RUN chmod +x start.sh
 
-ENTRYPOINT ["./start.sh"]
+CMD ["./start.sh"]

@@ -7,5 +7,5 @@ echo
 echo "start mysql server..."
 /usr/bin/mysqld --user=root &> /var/log/mysql.log &
 
-echo "start tomcat server..."
-/usr/local/tomcat/bin/catalina.sh run
+echo "start jboss server..."
+/jboss-eap-6.4/bin/standalone.sh
