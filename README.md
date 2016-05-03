@@ -18,6 +18,18 @@ docker inspect --format '{{ .NetworkSettings.IPAddress }}' reins-homework
 ```
 来获得容器IP，在浏览器中打开`IP:8080`即可看到jboss入口页面。
 
+**注意**: 在Windows/Mac下, 情况会复杂一些. 因为这两种平台下, Docker实际上是跑在一个虚拟机中. 因此建议安装一个Ubuntu虚拟机, 然后在里面玩.. 如果非要在这两个平台上玩, 可以用ssh tunnel进行端口映射:
+```
+boot2docker ssh -NL 8000:{dockerIP}:8080 -L 9990:{dockerIP}:9990
+```
+这样, 直接访问localhost:8000即可.
+
+再或者:
+```
+docker run --name reins-homework -p 8080:8080 -p 9990:9990 -d qqiangwu/reins-eis
+boot2docker ip # => we get IP, access IP:8080
+```
+
 你可以通过`docker exec -it reins-homework /bin/sh`打开容器shell，并在其中对容器进行操作，比如，连接mysql：`#> mysql -uroot`, 连接redis：`#> redis-cli`。
 
 默认的，mysql账号名为root，无密码。redis无密码。
@@ -41,25 +53,19 @@ source create.sql
 
 
 # 如何打包我的应用
-当你部署完成后，请确保你的应用已经可以访问了。之后，打包容器。
-```
-docker commit reins-homework reins/homework
-docker save reins/homework > reins-homework.tar
-gzip reins-homework.tar
-```
+当你部署完成后，请确保你的应用已经可以访问了。之后，打包容器并上传到docker hub上。
 
-此时，你应该已经得到了一个`reins-homework.tar.gz`的文件。这就是最终的提交物。
+首先, 注册一个docker hub的帐号. 假设用户名为reins.
+
+```
+docker login
+docker commit reins-homework reins/homework:x
+docker push reins/homework:x # x 表示第x个迭代. 如reins/homework:1
+```
 
 # 如何验证我操作
-在得到`reins-homework.tar.gz`后，我希望你能够验证一下你的tarball的可用性：
 ```
-gzip -d reins-homewor.tar.gz
-docker rmi reins/homework       # 移除旧的镜像，因此接下来要提交新的
-docker load -i reins-homework.tar
-docker run --name verification -d reins/homework
+docker rmi reins/homework
+docker pull reins/homework:x
+docker run --name test -d reins/homework:x
 ```
-
-用同样的方法获取`verification`的IP，并在浏览器中访问其8080端口。如果一切无误，则打包正确。
-
-# 如何构建(expert only)
-如果你懂Docker, 并希望自己构建此项目, 注意要先下载jboss-eap-6.4.zip. 由于下载这东西需要登录, 所以我没有办法自动化完成. 你们自己去下, 然后就可以`docker build`了.
